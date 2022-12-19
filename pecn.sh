@@ -6,6 +6,7 @@
 fdisk -l 
 # también se puede usar este
 lsblk 
+lsblk -o NAME,TYPE,FSTYPE,SIZE,MOUNTPOINT
 
 # mirar tabla /etc/fstab para ver donde se montan las particiones
 
