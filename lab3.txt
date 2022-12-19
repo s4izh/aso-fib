@@ -1,0 +1,265 @@
+Lab 3
+
+Scripts
+3.1
+
+Introduction
+
+Usually operating systems administration tasks should be repeated again and again, so the administrator
+must enter new orders, sometimes changing only one input parameter. Doing these tasks manually, not
+only implies a considerable investment of time, but exposes the system to errors when repeating a
+command in a wrong way. The automation of these tasks using scripting languages improves system
+efficiency as these are done without human intervention; increases reliability because the commands
+are executed in the same way each time and also ensures consistency in the execution beacuse these
+tasks can be easily programmed to run periodically.
+Although the automation could be made in any programming language, there are some languages,
+known as scripting languages, which allow to combine easily system commands with the expressions of
+the scripting language itself. Additionally they facilitate the manipulation of text files, lists, and directories
+and other useful tasks for system administration. There are many scripting languages available: the
+associated to the shell (like Bash or C shell) and other features, such as Perl or Python, with more
+advaned functionality.
+
+3.2
+
+Objective
+
+Learn how to automate common system administration tasks using scripting, in this lab we will use Bash.
+
+3.3
+
+Before you start
+
+Review basic programming with Bash shell-scripts.
+This lab consists of two parts: the first consist of analyzing a sample script for the detection of
+”unnecessary” users in the system. The second part consists of making a script for managing disk
+space.
+Scripts can be done in any shell scripting language but we strongly suggest you use Bash. In addition
+to proposed script, a final list of problems is presented for practicing outside the laboratory.
+Keep in mind all the time properties of a good script [1]:
+1. A script should run without errors.
+2. It must perform the task for which it is intended.
+3. The program logic must be clearly defined.
+4. A script should not do unnecessary work.
+5. Scripts should be reusable.
+1
+
+3.4. SCRIPT TO DETECT INVALID USERS
+
+3.4
+
+LAB 3. SCRIPTS
+
+Script to detect invalid users
+
+You are asked to make a script that determines which users in /etc/passwd are invalid. A user is invalid
+if he/she is in the passwd file but did not have any presence in the system (ie. it has no files).
+Also, there are users that have no files, but that are used to run system daemons. Add an option to
+declare valid users those that have a running process (-p flag).
+
+3.4.1
+
+Description of the desired results
+
+An example of script’s output without and with the -p flag is presented below:
+$./BadUsers.sh
+daemon
+bin
+sys
+sync
+games
+lp
+mail
+news
+rserral
+emorancho
+proxy
+backup
+$./BadUsers.sh -p
+bin
+sync
+games
+lp
+news
+rserral
+proxy
+backup
+
+3.4.2
+
+BASH version of the script
+
+now you have the BASH version of the script. Fill-in the empty spaces with the appropriate language
+constructs.
+1
+2
+
+# !/ bin / bash
+p =0
+
+3
+4
+5
+6
+7
+8
+9
+
+function print_help
+{
+echo " Usage : $1 [ options ] "
+echo " Possible options : "
+echo " -p validate users with running process "
+}
+
+10
+11
+12
+13
+14
+
+if [ $ # - gt 1 ]; then
+print_help $0
+exit
+fi
+
+15
+16
+17
+18
+19
+
+while [ $ # - gt 0 ]; do
+case $1 in
+" -p " )
+p =1
+2
+
+LAB 3. SCRIPTS
+
+20
+21
+22
+23
+24
+
+3.4. SCRIPT TO DETECT INVALID USERS
+
+shift ;;
+*) echo " Error : not valid option : $1 "
+exit 1;;
+esac
+done
+
+25
+26
+27
+28
+29
+30
+31
+32
+
+for user in _______________ ; do
+home = $ ( cat / etc / passwd | grep " ^ $user : " | cut -d : - f6 )
+if [ -d $home ]; then
+num_fich = $ ( find " $home " - type f - user $user | wc -l )
+else
+num_fich =0
+fi
+
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+
+if [ $num_fich - eq 0 ]; then
+if [ $p - eq 1 ]; then
+user_proc = _ _ _ __ _ _ __ _ _ __ _ _ __ _ _
+if [ $user_proc - eq 0 ]; then
+echo " The user $user has no processes "
+fi
+else
+echo " The user $user has no files in $home "
+fi
+fi
+done
+What is the purpose of the shift command in line 20?
+
+What is the meaning of the grep command in line 27? Why do we need to specify the : on
+grep?
+
+3.4.3
+
+Detection of unactive users
+
+Now extend the previous script to detect inactive users. An inactive user is defined as someone who
+does not have any running process, that long ago has not logged in (see commands last and lastlog),
+and that has not changed any of their files for a long time (see time options of find). The period of
+inactivity should be indicated through a parameter:
+$./BadUsers.sh -t 2d (indicates 2 days)
+alvarez
+aduran
+xavim
+marcg
+$./BadUsers.sh -t 4m (indicates 4 months)
+xavim
+marcg
+Modify the script to include the support for the new option in order to detect inactive users
+3
+
+3.5. SCRIPT FOR DISK SPACE MANAGEMENT
+
+3.5
+
+LAB 3. SCRIPTS
+
+Script for disk space management
+
+Make a script that computes the disk space used by each user on the whole system. If the amount of
+disk space exceeds certain space that is passed as a parameter, then write a message to the user bash
+login message (.bash profile) to inform him/her to delete or compress some files. Specifically, the
+syntax of the script should be the following:
+Note: The message should be left on the .bash profile file. The user must be able to
+identify and delete the message without any issues. This means that alongside the message
+it should get instructions to remove it.
+$ ./disk-usage.sh <space_limit>
+For exemple:
+$ ./disk-usage.sh 600M
+root
+567 MB
+alvarez
+128 KB
+aduran
+120 MB
+xavim
+23 MB
+( ... )
+After this, extend the script to add an option for groups: -g: With this option the script must return the
+total disk usage for each one of the users in the specified group, the total disk usage of the whole group.
+Therefore, the syntax of the final program will be:
+$ ./disk-usage.sh [-g grup] <space_limit>
+For example:
+$ ./disk-usage.sh -g users 500K
+alvarez
+128 KB
+xavim
+23 MB
+( ... )
+
+4
+
+Bibliography
+[1] M. Garrels, Bash Guide for Beginners. The Linux Documentation Project. TLDP. [Online]. Available:
+http://tldp.org/LDP/Bash-Beginners-Guide/Bash-Beginners-Guide.pdf
+
+5
+
+
